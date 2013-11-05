@@ -1,0 +1,29 @@
+function love.conf(t)
+    t.title                 = "Lazors in Space Editor"
+    t.author                = "Darkwater"
+    t.url                   = "http://novaember.com/"
+    t.identity              = "lise"
+    t.version               = "0.9.0"
+    t.window.width          = 800
+    t.window.height         = 600
+    t.window.minwidth       = 100
+    t.window.minheight      = 100
+    t.window.fullscreen     = false
+    t.window.fullscreentype = "normal"
+    t.window.fsaa           = 0
+    t.window.display        = 1
+    t.window.vsync          = false
+    t.window.borderless     = false
+    t.window.resizable      = false -- might make resizable later
+    t.window.centered       = true
+    t.modules.joystick      = false
+    t.modules.audio         = true
+    t.modules.keyboard      = true
+    t.modules.event         = true
+    t.modules.image         = true
+    t.modules.graphics      = true
+    t.modules.timer         = true
+    t.modules.mouse         = true
+    t.modules.sound         = true
+    t.modules.physics       = false
+end
