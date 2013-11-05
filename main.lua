@@ -29,14 +29,15 @@ function love.load()
         interface.mainmenu.background = loveframes.Create("panel")
         interface.mainmenu.background:SetState("mainmenu")
         interface.mainmenu.background.stars = {}
-        for i = 1, 100 do
+        for i = 1, 200 do
             table.insert(interface.mainmenu.background.stars, {
                 x = love.math.random(0, love.graphics.getWidth()) -.5,
                 y = love.math.random(0, love.graphics.getHeight() / 2) -.5,
                 color = {
                     love.math.random(200, 255),
                     love.math.random(200, 255),
-                    love.math.random(200, 255)
+                    love.math.random(200, 255),
+                    love.math.random(1, 255)
                 }
             })
         end
