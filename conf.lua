@@ -2,7 +2,7 @@ function love.conf(t)
     t.title                 = "Lazors in Space Editor"
     t.author                = "Darkwater"
     t.url                   = "http://novaember.com/"
-    t.identity              = "lise"
+    t.identity              = "lis"
     t.version               = "0.9.0"
     t.window.width          = 800
     t.window.height         = 600
