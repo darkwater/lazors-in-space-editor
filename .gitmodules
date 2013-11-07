@@ -1,3 +1,3 @@
 [submodule "loveframes"]
         path = loveframes
-        url = git://github.com/NikolaiResokav/LoveFrames.git
+        url = git@github.com:Darkwater124/LoveFrames.git
