@@ -6,20 +6,17 @@ function love.load()
 
     class = require("middleclass")
     require("loveframes")
+    require("json")
     require("polygon-shape")
     require("static-debris")
 
-    world = {}
-    world.objects = {}
-
-    world.zoom = 1
-    world.zoomtarget = 1
-
-    editor = {}
-    editor.mousepressed = {}
-    editor.mousereleased = {}
 
     interface = {}
+    
+    require("mapeditor")
+
+    interface.mousepressed = {}
+    interface.mousereleased = {}
 
     --== Background stars ==--
         interface.background = {}
@@ -51,11 +48,11 @@ function love.load()
         interface.mainmenu.panel:Center()
         interface.mainmenu.panel:SetState("mainmenu")
 
-        interface.mainmenu.level = loveframes.Create("button", interface.mainmenu.panel)
-        interface.mainmenu.level:SetPos(5, 5)
-        interface.mainmenu.level:SetWidth(190)
-        interface.mainmenu.level:SetText("Level Editor")
-        interface.mainmenu.level.OnClick = function (self)
+        interface.mainmenu.map = loveframes.Create("button", interface.mainmenu.panel)
+        interface.mainmenu.map:SetPos(5, 5)
+        interface.mainmenu.map:SetWidth(190)
+        interface.mainmenu.map:SetText("Map Editor")
+        interface.mainmenu.map.OnClick = function (self)
             loveframes.SetState("mapselect")
         end
     -------------------
@@ -73,18 +70,23 @@ function love.load()
         interface.mapselect.list:SetPos(5, 5)
         interface.mapselect.list:SetSize(400, 390)
         interface.mapselect.list:AddColumn("Filename")
-        interface.mapselect.list:AddColumn("Author")
         interface.mapselect.list:AddColumn("Map name")
-
-        for k, v in ipairs(love.filesystem.getDirectoryItems("maps")) do
-            interface.mapselect.list:AddRow(v, "..", "....")
+        interface.mapselect.list:AddColumn("Author")
+        interface.mapselect.list.refresh = function (self)
+            self:Clear()
+            for k, v in ipairs(love.filesystem.getDirectoryItems("maps")) do
+                local str = love.filesystem.read("maps/" .. v)
+                local obj = json.decode(str)
+                self:AddRow(v, obj.name, obj.author)
+            end
         end
+        interface.mapselect.list:refresh()
 
-        interface.mapselect.level = loveframes.Create("button", interface.mapselect.panel)
-        interface.mapselect.level:SetPos(410, 5)
-        interface.mapselect.level:SetWidth(185)
-        interface.mapselect.level:SetText("Create map")
-        interface.mapselect.level.OnClick = function (self)
+        interface.mapselect.create = loveframes.Create("button", interface.mapselect.panel)
+        interface.mapselect.create:SetPos(410, 5)
+        interface.mapselect.create:SetWidth(185)
+        interface.mapselect.create:SetText("Create map")
+        interface.mapselect.create.OnClick = function (self)
             local prompt = loveframes.Create("frame")
             prompt:SetState("mapselect")
             prompt:SetName("Create map")
@@ -102,19 +104,29 @@ function love.load()
 
             local input = loveframes.Create("textinput", prompt)
             input:SetPlaceholder("Filename")
+            input:SetUnusable({"/", "\0"})
             input:SetWidth(180)
             input:CenterX()
             input:SetY(70)
+            input.OnEnter = function ()
+                local name = input:GetText()
+
+                local data = {
+                    name    = "Unnamed",
+                    author  = "No-one",
+                    mapdata = {}
+                }
+                love.filesystem.write("maps/" .. name, json.encode(data) .. "\n")
+                prompt:Remove()
+                interface.mapselect.list:refresh()
+            end
 
             local create = loveframes.Create("button", prompt)
             create:SetText("Create")
             create:SetWidth(85)
             create:SetX(10)
             create:SetY(100)
-            create.OnClick = function ()
-
-                prompt:Remove()
-            end
+            create.OnClick = input.OnEnter
 
             local cancel = loveframes.Create("button", prompt)
             cancel:SetText("Cancel")
@@ -126,32 +138,77 @@ function love.load()
             end
         end
 
-        interface.mapselect.level = loveframes.Create("button", interface.mapselect.panel)
-        interface.mapselect.level:SetPos(410, 370)
-        interface.mapselect.level:SetWidth(185)
-        interface.mapselect.level:SetText("Edit")
-        interface.mapselect.level.OnClick = function (self)
-            loveframes.SetState("leveleditor")
-            table.insert(world.objects, StaticDebris:new())
+        interface.mapselect.remove = loveframes.Create("button", interface.mapselect.panel)
+        interface.mapselect.remove:SetPos(410, 340)
+        interface.mapselect.remove:SetWidth(185)
+        interface.mapselect.remove:SetText("Remove")
+        interface.mapselect.remove.OnClick = function (self)
+            if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
+
+            local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
+
+            local prompt = loveframes.Create("frame")
+            prompt:SetState("mapselect")
+            prompt:SetName("Delete map")
+            prompt:SetWidth(200)
+            prompt:SetHeight(110)
+            prompt:Center()
+            prompt:SetDockable(true)
+            prompt:SetModal(true)
+            prompt:MakeTop()
+
+            local label = loveframes.Create("text", prompt)
+            label:SetText("Are you sure you want to delete " .. mapname .. "?")
+            label:SetWidth(160)
+            label:CenterX()
+            label:SetY(35)
+
+            local remove = loveframes.Create("button", prompt)
+            remove:SetText("Remove")
+            remove:SetWidth(85)
+            remove:SetX(10)
+            remove:SetY(75)
+            remove.OnClick = function ()
+                love.filesystem.remove("maps/" .. mapname)
+                prompt:Remove()
+                interface.mapselect.list:refresh()
+            end
+
+            local cancel = loveframes.Create("button", prompt)
+            cancel:SetText("Cancel")
+            cancel:SetWidth(85)
+            cancel:SetX(105)
+            cancel:SetY(75)
+            cancel.OnClick = function ()
+                prompt:Remove()
+            end
+        end
+
+        interface.mapselect.edit = loveframes.Create("button", interface.mapselect.panel)
+        interface.mapselect.edit:SetPos(410, 370)
+        interface.mapselect.edit:SetWidth(185)
+        interface.mapselect.edit:SetText("Edit")
+        interface.mapselect.edit.OnClick = function (self)
+            if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
+
+            local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
+
+            loveframes.SetState("mapeditor")
+            interface.mapeditor.base:LoadMap(mapname)
         end
     -------------------
+
 end
 
 function love.update(dt)
+
     mousex, mousey = love.mouse.getPosition()
-
-
-    -- World objects
-    for k,v in pairs(world.objects) do
-        if v.update then
-            v:update()
-        end
-    end
-
     loveframes.update(dt)
+
 end
 
 function love.draw()
+
     -- Stars
     local width = love.graphics.getWidth()
     local height = love.graphics.getHeight()
@@ -162,50 +219,45 @@ function love.draw()
     end
 
 
-    -- World objects
-    for k,v in pairs(world.objects) do
-        if v.draw then
-            v:draw()
-        end
-    end
-
-
-    for k,v in pairs(editor.mousepressed)  do editor.mousepressed[k]  = false end
-    for k,v in pairs(editor.mousereleased) do editor.mousereleased[k] = false end
+    for k,v in pairs(interface.mousepressed)  do interface.mousepressed[k]  = false end
+    for k,v in pairs(interface.mousereleased) do interface.mousereleased[k] = false end
 
     loveframes.draw()
+
 end
 
 function love.keypressed(key, isrepeat)
+
     if key == "escape" then
         love.event.quit()
         return
     end
 
     loveframes.keypressed(key, isrepeat)
+
 end
 
 function love.keyreleased(key)
+
     loveframes.keyreleased(key)
+
 end
 
 function love.textinput(char)
+
     loveframes.textinput(char)
+
 end
 
 function love.mousepressed(x, y, but)
-    editor.mousepressed[but] = true
 
-    if but == "wu" then
-        world.zoomtarget = world.zoomtarget * 1.05
-    elseif but == "wd" then
-        world.zoomtarget = world.zoomtarget * 0.95
-    end
-
+    interface.mousepressed[but] = true
     loveframes.mousepressed(x, y, but)
+
 end
 function love.mousereleased(x, y, but)
-    editor.mousereleased[but] = true
 
+    interface.mousereleased[but] = true
     loveframes.mousereleased(x, y, but)
+
 end

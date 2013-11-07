@@ -4,9 +4,9 @@ PolygonShape = class("PolygonShape")
 -- PolygonShape:initialize
 -- Creates a new PolygonShape object.
 --
-function PolygonShape:initialize()
-    self.points = {}
-    self.creating = true
+function PolygonShape:initialize(points)
+    self.points = points or {}
+    self.creating = not points
     self.attemptingConcave = false
 
     self.debug = ""
@@ -29,7 +29,7 @@ function PolygonShape:update(dt)
         end
 
         if not self.attemptingConcave then
-            if editor.mousepressed["l"] then
+            if interface.mousepressed["l"] then
                 local canPlace = true
                 for i=0, #self.points/2 - 1 do
                     local x = self.points[i * 2 + 1]
@@ -59,24 +59,33 @@ function PolygonShape:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setLineWidth(1.2)
 
-    if #self.points >= 4 then
-        love.graphics.line(self.points)
-    end
-    for i=0, #self.points/2 - 1 do
-        local x = self.points[i * 2 + 1]
-        local y = self.points[i * 2 + 2]
-        love.graphics.circle("line", x, y, 4, 10)
-    end
-
     if self.creating then
         if #self.points > 0 then
+
+            if #self.points >= 4 then
+                love.graphics.line(self.points)
+            end
+
+            for i=0, #self.points/2 - 1 do
+                local x = self.points[i * 2 + 1]
+                local y = self.points[i * 2 + 2]
+                love.graphics.circle("line", x, y, 4, 10)
+            end
+
             if self.attemptingConcave then love.graphics.setColor(255, 50, 20, 200)
                 else love.graphics.setColor(180, 200, 255, 100) end
+
             love.graphics.line(self.points[#self.points - 1], self.points[#self.points], mousex, mousey)
+
         end
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.circle("line", mousex, mousey, 8, 20)
         love.graphics.print(self.debug or "", mousex + 10, mousey + 20)
+
+    else
+
+        love.graphics.polygon("line", self.points)
+
     end
 end

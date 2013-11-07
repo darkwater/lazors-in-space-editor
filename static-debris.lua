@@ -4,8 +4,8 @@ StaticDebris = class("StaticDebris", PolygonShape)
 -- StaticDebris:initialize
 -- Creates a new StaticDebris object.
 --
-function StaticDebris:initialize()
-    PolygonShape.initialize(self)
+function StaticDebris:initialize(points)
+    PolygonShape.initialize(self, points)
 end
 
 
