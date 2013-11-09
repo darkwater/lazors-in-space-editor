@@ -35,7 +35,7 @@ end
 --
 function PointEntity:draw()
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setPointSize(2)
+    love.graphics.setPointSize(5)
 
     if self.creating then
         love.graphics.point(mapeditor.world.mousex, mapeditor.world.mousey)

@@ -155,7 +155,6 @@ function love.load()
             prompt:SetWidth(200)
             prompt:SetHeight(110)
             prompt:Center()
-            prompt:SetDockable(true)
             prompt:SetModal(true)
             prompt:MakeTop()
 
@@ -214,6 +213,7 @@ function love.draw()
     -- Stars
     local width = love.graphics.getWidth()
     local height = love.graphics.getHeight()
+    love.graphics.setPointSize(1)
 
     for k,v in pairs(interface.background.stars) do
         love.graphics.setColor(unpack(v.color))

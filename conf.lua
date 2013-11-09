@@ -4,8 +4,8 @@ function love.conf(t)
     t.url                   = "http://novaember.com/"
     t.identity              = "lis"
     t.version               = "0.9.0"
-    t.window.width          = 800
-    t.window.height         = 600
+    t.window.width          = 1024
+    t.window.height         = 768
     t.window.minwidth       = 100
     t.window.minheight      = 100
     t.window.fullscreen     = false

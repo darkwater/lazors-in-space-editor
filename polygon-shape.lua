@@ -20,27 +20,43 @@ end
 function PolygonShape:update(dt)
     if self.creating then
         if #self.points >= 4 then
+
             local p = { unpack(self.points) }
-            table.insert(p, mousex)
-            table.insert(p, mousey)
+            table.insert(p, mapeditor.world.mousex)
+            table.insert(p, mapeditor.world.mousey)
             self.attemptingConcave = not love.math.isConvex(unpack(p))
+
         end
+
 
         if not self.attemptingConcave then
             if interface.mousepressed["l"] and mapeditor:GetHover() then
-                local canPlace = true
-                for i=0, #self.points/2 - 1 do
-                    local x = self.points[i * 2 + 1]
-                    local y = self.points[i * 2 + 2]
-                    if x == mousex and y == mousey then
-                        canPlace = false
-                        break
-                    end
-                end
+                if #self.points >= 6 and math.sqrt((mapeditor.world.mousex - self.points[1])^2 + (mapeditor.world.mousey - self.points[2])^2) <= 5 then
 
-                if self.points[#self.points - 1] ~= mousex or self.points[#self.points] ~= mousey then
-                    table.insert(self.points, mousex)
-                    table.insert(self.points, mousey)
+                    self.creating = false
+
+                else
+
+                    local canPlace = true
+                    for i=0, #self.points/2 do
+
+                        local x = self.points[i * 2 + 1]
+                        local y = self.points[i * 2 + 2]
+
+                        if x == mapeditor.world.mousex and y == mapeditor.world.mousey then
+                            canPlace = false
+                            break
+                        end
+
+                    end
+
+
+                    if canPlace and (self.points[#self.points - 1] ~= mapeditor.world.mousex or self.points[#self.points] ~= mapeditor.world.mousey) then
+
+                        table.insert(self.points, mapeditor.world.mousex)
+                        table.insert(self.points, mapeditor.world.mousey)
+
+                    end
                 end
             end
         end
@@ -66,19 +82,18 @@ function PolygonShape:draw()
             for i=0, #self.points/2 - 1 do
                 local x = self.points[i * 2 + 1]
                 local y = self.points[i * 2 + 2]
-                love.graphics.circle("line", x, y, 4, 10)
+                love.graphics.circle("line", x, y, 5, 10)
             end
 
             if self.attemptingConcave then love.graphics.setColor(255, 50, 20, 200)
                 else love.graphics.setColor(180, 200, 255, 100) end
 
-            love.graphics.line(self.points[#self.points - 1], self.points[#self.points], mousex, mousey)
+            love.graphics.line(self.points[#self.points - 1], self.points[#self.points], mapeditor.world.mousex, mapeditor.world.mousey)
 
         end
 
         love.graphics.setColor(255, 255, 255, 255)
-        love.graphics.circle("line", mousex, mousey, 8, 20)
-        love.graphics.print(self.debug or "", mousex + 10, mousey + 20)
+        love.graphics.circle("line", mapeditor.world.mousex, mapeditor.world.mousey, 8, 20)
 
     else
 
