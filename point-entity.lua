@@ -20,8 +20,8 @@ end
 function PointEntity:update(dt)
     if self.creating then
         if interface.mousepressed["l"] and mapeditor:GetHover() then
-            self.x = mapeditor.world.mousex
-            self.y = mapeditor.world.mousey
+            self.x = mapeditor.world.gridmousex
+            self.y = mapeditor.world.gridmousey
             self.creating = false
         end
     end
@@ -38,8 +38,8 @@ function PointEntity:draw()
     love.graphics.setPointSize(5)
 
     if self.creating then
-        love.graphics.point(mapeditor.world.mousex, mapeditor.world.mousey)
-        love.graphics.circle("line", mapeditor.world.mousex, mapeditor.world.mousey, 8, 5)
+        love.graphics.point(mapeditor.world.gridmousex, mapeditor.world.gridmousey)
+        love.graphics.circle("line", mapeditor.world.gridmousex, mapeditor.world.gridmousey, 8, 5)
     else
         love.graphics.point(self.x, self.y)
         love.graphics.circle("line", self.x, self.y, 12, 20)
