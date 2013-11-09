@@ -8,7 +8,9 @@ function love.load()
     require("loveframes")
     require("json")
     require("polygon-shape")
+    require("point-entity")
     require("static-debris")
+    require("map-boundary")
 
 
     interface = {}
@@ -194,7 +196,7 @@ function love.load()
             local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
 
             loveframes.SetState("mapeditor")
-            interface.mapeditor.base:LoadMap(mapname)
+            mapeditor:LoadMap(mapname)
         end
     -------------------
 

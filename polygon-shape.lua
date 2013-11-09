@@ -8,8 +8,6 @@ function PolygonShape:initialize(points)
     self.points = points or {}
     self.creating = not points
     self.attemptingConcave = false
-
-    self.debug = ""
 end
 
 
@@ -29,7 +27,7 @@ function PolygonShape:update(dt)
         end
 
         if not self.attemptingConcave then
-            if interface.mousepressed["l"] then
+            if interface.mousepressed["l"] and mapeditor:GetHover() then
                 local canPlace = true
                 for i=0, #self.points/2 - 1 do
                     local x = self.points[i * 2 + 1]
@@ -48,7 +46,6 @@ function PolygonShape:update(dt)
         end
     end
 end
-
 
 
 ---

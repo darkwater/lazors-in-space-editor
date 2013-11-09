@@ -20,7 +20,6 @@ function StaticDebris:update(dt)
 end
 
 
-
 ---
 -- StaticDebris:draw
 -- Draws the StaticDebris.
