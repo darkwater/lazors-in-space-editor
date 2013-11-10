@@ -4,10 +4,16 @@ PointEntity = class("PointEntity")
 -- PointEntity:initialize
 -- Creates a new PointEntity object.
 --
-function PointEntity:initialize(x, y)
-    self.x = x or 0
-    self.y = y or 0
-    self.creating = x == nil or y == nil
+function PointEntity:initialize(data)
+    if data then
+        self.x = data.x
+        self.y = data.y
+        self.creating = false
+    else
+        self.x = 0
+        self.y = 0
+        self.creating = true
+    end
 end
 
 

@@ -1,3 +1,10 @@
+require("polygon-shape")
+require("static-debris")
+require("map-boundary")
+
+require("point-entity")
+require("entity-spawner")
+
 interface.mapeditor = {}
 interface.mapeditor.base = loveframes.Create("panel")
 mapeditor = interface.mapeditor.base
@@ -151,13 +158,7 @@ mapeditor.LoadMap = function (self, mapname)
     for k,v in pairs(obj.mapdata) do
         local classname = v[1]
         if _G[classname] then
-            local args = {}
-
-            for i=2, #v do
-                args[i-1] = v[i]
-            end
-
-            table.insert(self.world.objects, _G[classname]:new(args))
+            table.insert(self.world.objects, _G[classname]:new(v[2]))
         end
     end
 

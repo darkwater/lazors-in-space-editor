@@ -7,10 +7,6 @@ function love.load()
     class = require("middleclass")
     require("loveframes")
     require("json")
-    require("polygon-shape")
-    require("point-entity")
-    require("static-debris")
-    require("map-boundary")
 
 
     interface = {}

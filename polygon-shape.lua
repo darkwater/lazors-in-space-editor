@@ -4,9 +4,15 @@ PolygonShape = class("PolygonShape")
 -- PolygonShape:initialize
 -- Creates a new PolygonShape object.
 --
-function PolygonShape:initialize(points)
-    self.points = points or {}
-    self.creating = not points
+function PolygonShape:initialize(data)
+    if data then
+        self.points = data.points
+        self.creating = false
+    else
+        self.points = {}
+        self.creating = true
+    end
+
     self.attemptingConcave = false
 end
 
