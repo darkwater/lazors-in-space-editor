@@ -36,7 +36,7 @@ function PolygonShape:update(dt)
 
 
         if not self.attemptingConcave then
-            if interface.mousepressed["l"] and mapeditor:GetHover() then
+            if mapeditor.world.mousepressed then
                 if #self.points >= 6 and math.sqrt((mapeditor.world.gridmousex - self.points[1])^2 + (mapeditor.world.gridmousey - self.points[2])^2) <= 5 then
 
                     self.creating = false

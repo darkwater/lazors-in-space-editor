@@ -97,8 +97,14 @@ mapeditor.world.mousey = 0
 mapeditor.world.gridmousex = 0
 mapeditor.world.gridmousey = 0
 
+mapeditor.world.mousedown = false
+mapeditor.world.mousepressed = false
+
 mapeditor.world.camerax = 0
 mapeditor.world.cameray = 0
+mapeditor.world.cameragrabx = 0
+mapeditor.world.cameragraby = 0
+mapeditor.world.cameragrabbed = false
 
 mapeditor.world.zoom = 1
 mapeditor.world.zoomtarget = 1
@@ -107,10 +113,36 @@ mapeditor.world.zoomtarget = 1
 mapeditor.Update = function (self)
 
     if self:GetHover() then
-        mapeditor.world.mousex = mousex - love.graphics.getWidth() / 2 - mapeditor.world.camerax
-        mapeditor.world.mousey = mousey - love.graphics.getHeight() / 2 - mapeditor.world.cameray
+        mapeditor.world.mousex = mousex - (love.graphics.getWidth() / 2 - mapeditor.world.camerax)
+        mapeditor.world.mousey = mousey - (love.graphics.getHeight() / 2 - mapeditor.world.cameray)
         mapeditor.world.gridmousex = math.floor(mapeditor.world.mousex / mapeditor.gridsize + .5) * mapeditor.gridsize
         mapeditor.world.gridmousey = math.floor(mapeditor.world.mousey / mapeditor.gridsize + .5) * mapeditor.gridsize
+
+        if interface.mousepressed["l"] then
+            if love.keyboard.isDown(" ") then
+                mapeditor.world.cameragrabbed = true
+                mapeditor.world.cameragrabx = mousex
+                mapeditor.world.cameragraby = mousey
+            else
+                mapeditor.world.mousedown = true
+                mapeditor.world.mousepressed = true
+            end
+        end
+    end
+
+    if not love.mouse.isDown("l") and mapeditor.world.mousedown then
+        mapeditor.world.mousedown = false
+    end
+
+    if mapeditor.world.cameragrabbed then
+        if love.mouse.isDown("l") then
+            mapeditor.world.camerax = mapeditor.world.camerax - (mousex - mapeditor.world.cameragrabx)
+            mapeditor.world.cameray = mapeditor.world.cameray - (mousey - mapeditor.world.cameragraby)
+            mapeditor.world.cameragrabx = mousex
+            mapeditor.world.cameragraby = mousey
+        else
+            mapeditor.world.cameragrabbed = false
+        end
     end
 
 
@@ -122,13 +154,14 @@ mapeditor.Update = function (self)
     end
 
 
-    -- Zooming
-    if interface.mousepressed["wu"] and self:GetHover() then
-        self.world.zoomtarget = self.world.zoomtarget * 1.05
-    end
-    if interface.mousepressed["wd"] and self:GetHover() then
-        self.world.zoomtarget = self.world.zoomtarget * 0.95
-    end
+    -- -- Zooming -- do we even want this
+    -- if interface.mousepressed["wu"] and self:GetHover() then
+    --     self.world.zoomtarget = self.world.zoomtarget * 1.1
+    -- end
+    -- if interface.mousepressed["wd"] and self:GetHover() then
+    --     self.world.zoomtarget = self.world.zoomtarget * 0.9
+    -- end
+    -- mapeditor.world.zoom = mapeditor.world.zoom + (mapeditor.world.zoomtarget - mapeditor.world.zoom) / 5
 
 end
 
@@ -136,7 +169,7 @@ end
 mapeditor.Draw = function (self)
 
     -- World objects
-    love.graphics.push()
+    love.graphics.push()  
     love.graphics.translate(love.graphics.getWidth() / 2 - self.world.camerax, love.graphics.getHeight() / 2 - self.world.cameray)
         for k,v in pairs(self.world.objects) do
             if v.draw then
@@ -144,6 +177,9 @@ mapeditor.Draw = function (self)
             end
         end
     love.graphics.pop()
+
+
+    mapeditor.world.mousepressed = false
 
 end
 

@@ -25,7 +25,7 @@ end
 --
 function PointEntity:update(dt)
     if self.creating then
-        if interface.mousepressed["l"] and mapeditor:GetHover() then
+        if mapeditor.world.mousepressed then
             self.x = mapeditor.world.gridmousex
             self.y = mapeditor.world.gridmousey
             self.creating = false
