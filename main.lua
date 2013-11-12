@@ -7,6 +7,7 @@ function love.load()
     class = require("middleclass")
     require("loveframes")
     require("json")
+    require("util")
 
 
     interface = {}

@@ -115,13 +115,13 @@ interface.mapeditor.options:ShowCloseButton(false)
     interface.mapeditor.gridsize:SetWidth(140)
     interface.mapeditor.gridsize:SetMin(1)
     interface.mapeditor.gridsize:SetMax(100)
-    interface.mapeditor.gridsize:SetValue(5)
+    interface.mapeditor.gridsize:SetValue(50)
     interface.mapeditor.gridsize.OnValueChanged = function (self)
         mapeditor.gridsize = self:GetValue()
     end
 
 
-mapeditor.gridsize = 5
+mapeditor.gridsize = 50
 mapeditor.gridenabled = true
 
 mapeditor.world = {}
@@ -131,6 +131,7 @@ mapeditor.world.mousex = 0
 mapeditor.world.mousey = 0
 mapeditor.world.gridmousex = 0
 mapeditor.world.gridmousey = 0
+mapeditor.world.mouseonobject = 0
 
 mapeditor.world.mousedown = false
 mapeditor.world.mousepressed = false
@@ -146,6 +147,8 @@ mapeditor.world.zoomtarget = 1
 
 
 mapeditor.Update = function (self)
+
+    self.world.mouseonobject = false
 
     if self:GetHover() then
         mapeditor.world.mousex = mousex - (love.graphics.getWidth() / 2 - mapeditor.world.camerax)
@@ -182,10 +185,14 @@ mapeditor.Update = function (self)
 
 
     -- World objects
+    local toupdate = {}
     for k,v in pairs(self.world.objects) do
         if v.update then
-            v:update()
+            table.insert(toupdate, v)
         end
+    end
+    for i = #toupdate, 1, -1 do
+        toupdate[i]:update()
     end
 
 
@@ -252,6 +259,7 @@ mapeditor.SaveTo = function (self, name)
     love.filesystem.write("maps/" .. name, json.encode(obj) .. "\n")
 
 end
+
 
 mapeditor.SaveAs = function (self)
 

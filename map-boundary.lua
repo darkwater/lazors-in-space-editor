@@ -18,7 +18,14 @@ end
 function MapBoundary:GetDataTable()
     if self.creating then return end
 
+    local p = {}
+
+    for k,v in pairs(self.points) do
+        table.insert(p, v.x)
+        table.insert(p, v.y)
+    end
+
     return { "MapBoundary", {
-        points = self.points
+        points = p
     } }
 end
