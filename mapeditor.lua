@@ -153,8 +153,8 @@ mapeditor.Update = function (self)
     if self:GetHover() then
         mapeditor.world.mousex = mousex - (love.graphics.getWidth() / 2 - mapeditor.world.camerax)
         mapeditor.world.mousey = mousey - (love.graphics.getHeight() / 2 - mapeditor.world.cameray)
-        mapeditor.world.gridmousex = math.floor(mapeditor.world.mousex / mapeditor.gridsize + .5) * mapeditor.gridsize
-        mapeditor.world.gridmousey = math.floor(mapeditor.world.mousey / mapeditor.gridsize + .5) * mapeditor.gridsize
+        mapeditor.world.gridmousex = mapeditor.gridenabled and (math.floor(mapeditor.world.mousex / mapeditor.gridsize + .5) * mapeditor.gridsize) or mapeditor.world.mousex
+        mapeditor.world.gridmousey = mapeditor.gridenabled and (math.floor(mapeditor.world.mousey / mapeditor.gridsize + .5) * mapeditor.gridsize) or mapeditor.world.mousey
 
         if interface.mousepressed["l"] then
             if love.keyboard.isDown(" ") then
