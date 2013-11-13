@@ -6,11 +6,7 @@ function PolygonShape:initialize(data)
         for i=0, #data.points/2-1 do
             local x = data.points[i * 2 + 1]
             local y = data.points[i * 2 + 2]
-            table.insert(self.points, PointEntity:new({
-                x = x,
-                y = y,
-                radius = 8
-            }))
+            self:addPoint(x, y)
         end
 
         self.creating = false
@@ -19,13 +15,13 @@ function PolygonShape:initialize(data)
         self.creating = true
     end
 
-    self.attemptingConcave = false
+    self.invalid = false
 end
 
 
 function PolygonShape:update(dt)
     if self.creating then
-        if #self.points >= 4 then
+        if #self.points >= 3 then
 
             local p = {}
 
@@ -36,12 +32,12 @@ function PolygonShape:update(dt)
 
             table.insert(p, mapeditor.world.gridmousex)
             table.insert(p, mapeditor.world.gridmousey)
-            self.attemptingConcave = not love.math.isConvex(unpack(p))
+            self.invalid = not love.math.isConvex(unpack(p))
 
         end
 
 
-        if not self.attemptingConcave then
+        if not self.invalid then
             if mapeditor.world.mousepressed then
                 if #self.points >= 3 and util.distance(mapeditor.world.gridmousex, mapeditor.world.gridmousey, self.points[1].x, self.points[1].y) <= 5 then
 
@@ -60,11 +56,7 @@ function PolygonShape:update(dt)
 
                     if canPlace and (self.points[#self.points - 1] ~= mapeditor.world.gridmousex or self.points[#self.points] ~= mapeditor.world.gridmousey) then
 
-                        table.insert(self.points, PointEntity:new({
-                            x = mapeditor.world.gridmousex,
-                            y = mapeditor.world.gridmousey,
-                            radius = 8
-                        }))
+                        self:addPoint(mapeditor.world.gridmousex, mapeditor.world.gridmousey)
 
                     end
                 end
@@ -99,7 +91,7 @@ function PolygonShape:draw()
                 love.graphics.line(p)
             end
 
-            if self.attemptingConcave then love.graphics.setColor(255, 50, 20, 200)
+            if self.invalid then love.graphics.setColor(255, 50, 20, 200)
                 else love.graphics.setColor(180, 200, 255, 100) end
 
             love.graphics.line(self.points[#self.points].x, self.points[#self.points].y, mapeditor.world.gridmousex, mapeditor.world.gridmousey)
@@ -118,6 +110,9 @@ function PolygonShape:draw()
             table.insert(p, v.y)
         end
 
+        if self.invalid then love.graphics.setColor(255, 50, 20, 200)
+            else love.graphics.setColor(255, 255, 255, 255) end
+
         love.graphics.polygon("line", p)
 
         for k,v in pairs(self.points) do
@@ -125,4 +120,25 @@ function PolygonShape:draw()
         end
 
     end
+end
+
+
+function PolygonShape:addPoint(x, y)
+    table.insert(self.points, PointEntity:new({
+        x = x,
+        y = y,
+        radius = 8,
+        onMove = function ()
+
+            local p = {}
+
+            for k,v in pairs(self.points) do
+                table.insert(p, v.x)
+                table.insert(p, v.y)
+            end
+
+            self.invalid = not love.math.isConvex(unpack(p))
+
+        end
+    }))
 end

@@ -1,9 +1,5 @@
 PointEntity = class("PointEntity")
 
----
--- PointEntity:initialize
--- Creates a new PointEntity object.
---
 function PointEntity:initialize(data)
     if not data then data = {} end
 
@@ -19,15 +15,11 @@ function PointEntity:initialize(data)
 
     self.radius = data.radius or 12
     self.hovering = false
+
+    self.onMove = data.onMove or nil
 end
 
 
----
--- PointEntity:update
--- Updates the PointEntity.
---
--- @param dt        Time passed since last frame
---
 function PointEntity:update(dt)
     if self.creating then
         if mapeditor.world.mousepressed then
@@ -43,8 +35,12 @@ function PointEntity:update(dt)
                 self.grabbed = false
             else
                 mapeditor.world.mouseonobject = true
-                self.x = mapeditor.world.gridmousex
-                self.y = mapeditor.world.gridmousey
+                if self.x ~= mapeditor.world.gridmousex or self.y ~= mapeditor.world.gridmousey then
+                    self.x = mapeditor.world.gridmousex
+                    self.y = mapeditor.world.gridmousey
+
+                    if self.onMove then self:onMove(x, y) end
+                end
             end
         elseif self.hovering then
             mapeditor.world.mouseonobject = true
@@ -57,11 +53,6 @@ function PointEntity:update(dt)
 end
 
 
-
----
--- PointEntity:draw
--- Draws the PointEntity.
---
 function PointEntity:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setPointSize(5)
