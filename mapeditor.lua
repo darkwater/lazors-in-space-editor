@@ -1,6 +1,5 @@
 require("polygon-shape")
 require("static-debris")
-require("map-boundary")
 
 require("point-entity")
 require("entity-spawner")

@@ -2,6 +2,7 @@ StaticDebris = class("StaticDebris", PolygonShape)
 
 function StaticDebris:initialize(points)
     PolygonShape.initialize(self, points)
+    self.canconvex = true
 end
 
 

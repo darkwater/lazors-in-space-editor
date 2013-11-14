@@ -16,12 +16,13 @@ function PolygonShape:initialize(data)
     end
 
     self.invalid = false
+    self.canconvex = false
 end
 
 
 function PolygonShape:update(dt)
     if self.creating then
-        if #self.points >= 3 then
+        if #self.points >= 3 and not self.canconvex then
 
             local p = {}
 
@@ -129,6 +130,8 @@ function PolygonShape:addPoint(x, y)
         y = y,
         radius = 8,
         onMove = function ()
+
+            if self.canconvex then return end
 
             local p = {}
 
