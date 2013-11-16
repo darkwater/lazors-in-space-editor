@@ -160,6 +160,7 @@ mapeditor.Update = function (self)
                 mapeditor.world.cameragrabbed = true
                 mapeditor.world.cameragrabx = mousex
                 mapeditor.world.cameragraby = mousey
+                love.mouse.setVisible(false)
             else
                 mapeditor.world.mousedown = true
                 mapeditor.world.mousepressed = true
@@ -175,10 +176,10 @@ mapeditor.Update = function (self)
         if love.mouse.isDown("l") then
             mapeditor.world.camerax = mapeditor.world.camerax - (mousex - mapeditor.world.cameragrabx)
             mapeditor.world.cameray = mapeditor.world.cameray - (mousey - mapeditor.world.cameragraby)
-            mapeditor.world.cameragrabx = mousex
-            mapeditor.world.cameragraby = mousey
+            love.mouse.setPosition(mapeditor.world.cameragrabx, mapeditor.world.cameragraby)
         else
             mapeditor.world.cameragrabbed = false
+            love.mouse.setVisible(true)
         end
     end
 
