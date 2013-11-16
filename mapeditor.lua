@@ -64,7 +64,7 @@ interface.mapeditor.tools:ShowCloseButton(false)
     interface.mapeditor.toolslist:SetHeight(170)
     interface.mapeditor.toolslist:SetPadding(5)
     interface.mapeditor.toolslist:SetSpacing(5)
-    for k,v in pairs({ "StaticDebris", "PointEntity" }) do
+    for k,v in pairs({ "StaticDebris", "EntitySpawner" }) do
         local button = loveframes.Create("button", interface.mapeditor.toolslist)
         button:SetText(v)
         button.OnClick = function (self)

@@ -8,6 +8,7 @@ function love.load()
     require("loveframes")
     require("json")
     require("util")
+    require("properties-menu")
 
 
     interface = {}
