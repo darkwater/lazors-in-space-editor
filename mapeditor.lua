@@ -210,14 +210,22 @@ end
 
 mapeditor.Draw = function (self)
 
-    -- World objects
+
+    -- World
     love.graphics.push()  
     love.graphics.translate(love.graphics.getWidth() / 2 - self.world.camerax, love.graphics.getHeight() / 2 - self.world.cameray)
+
+        -- Spawnpoint
+        love.graphics.setPointSize(5)
+        love.graphics.setColor(255, 175, 0)
+        love.graphics.point(0, 0)
+
         for k,v in pairs(self.world.objects) do
             if v.draw then
                 v:draw()
             end
         end
+
     love.graphics.pop()
 
 
