@@ -17,6 +17,7 @@ function PointEntity:initialize(data)
     self.hovering = false
 
     self.onMove = data.onMove or nil
+    self.onRemove = data.onRemove or nil
 end
 
 
@@ -49,6 +50,10 @@ function PointEntity:update(dt)
                 self.grabbed = true
             end
         end
+    end
+
+    if interface.mousepressed["m"] and self.hovering and self.onRemove then
+        self:onRemove()
     end
 end
 

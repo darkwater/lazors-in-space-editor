@@ -71,7 +71,8 @@ interface.mapeditor.tools:ShowCloseButton(false)
             for k,v in pairs(mapeditor.world.objects) do
                 if v.creating then mapeditor.world.objects[k] = nil end
             end
-            table.insert(mapeditor.world.objects, _G[v]:new())
+            local id = #mapeditor.world.objects + 1
+            table.insert(mapeditor.world.objects, _G[v]:new(nil, id))
         end
     end
 
@@ -246,7 +247,8 @@ mapeditor.LoadMap = function (self, name)
     for k,v in pairs(self.mapdata.mapdata) do
         local classname = v[1]
         if _G[classname] then
-            table.insert(self.world.objects, _G[classname]:new(v[2]))
+            local id = #self.world.objects + 1
+            table.insert(self.world.objects, _G[classname]:new(v[2], id))
         end
     end
 

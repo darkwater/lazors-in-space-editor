@@ -1,8 +1,10 @@
 StaticDebris = class("StaticDebris", PolygonShape)
 
-function StaticDebris:initialize(points)
-    PolygonShape.initialize(self, points)
+function StaticDebris:initialize(data, id)
+    PolygonShape.initialize(self, data)
     self.canconvex = true
+
+    self.objectid = id
 end
 
 
@@ -29,4 +31,10 @@ function StaticDebris:GetDataTable()
     return { "StaticDebris", {
         points = p
     } }
+end
+
+
+function StaticDebris:remove()
+    mapeditor.world.objects[self.objectid] = nil
+    self = nil
 end

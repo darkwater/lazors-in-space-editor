@@ -1,12 +1,14 @@
 EntitySpawner = class("EntitySpawner", PointEntity)
 
-function EntitySpawner:initialize(data)
+function EntitySpawner:initialize(data, id)
     PointEntity.initialize(self, data)
 
     data = data or {}
     self.type = data.type or ""
     self.interval = data.interval or {1,12}
     self.amount = data.amount or {1,4}
+
+    self.objectid = id
 end
 
 
@@ -85,4 +87,10 @@ function EntitySpawner:ContextMenu()
     amountmax.OnValueChanged = function ()
         self.amount[2] = amountmax:GetValue()
     end
+end
+
+
+function EntitySpawner:onRemove()
+    mapeditor.world.objects[self.objectid] = nil
+    self = nil
 end

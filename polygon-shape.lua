@@ -17,6 +17,7 @@ function PolygonShape:initialize(data)
 
     self.invalid = false
     self.canconvex = false
+    self.hover = false
 end
 
 
@@ -69,6 +70,26 @@ function PolygonShape:update(dt)
             v:update()
         end
 
+        self.hover = false
+        if mapeditor:GetHover() and not mapeditor.world.mouseonobject then
+
+            for i = 1, #self.points do
+                local j = (i < #self.points) and (i + 1) or 1
+                local a, b = self.points[i], self.points[j]
+                local dist, u = util.distancePointToLine(a.x, a.y, b.x, b.y, mapeditor.world.mousex, mapeditor.world.mousey)
+
+                if dist < 10 then
+                    local x = util.lerp(a.x, b.x, u)
+                    local y = util.lerp(a.y, b.y, u)
+                    self.hover = {x=x, y=y, i=i}
+                end
+            end
+        end
+
+        if self.hover and interface.mousepressed["l"] then
+            self:addPoint(self.hover.x, self.hover.y, self.hover.i + 1, true)
+        end
+
     end
 end
 
@@ -116,6 +137,12 @@ function PolygonShape:draw()
 
         love.graphics.polygon("line", p)
 
+        if self.hover then
+            love.graphics.setPointSize(10)
+            love.graphics.setColor(150, 255, 150)
+            love.graphics.point(self.hover.x, self.hover.y)
+        end
+
         for k,v in pairs(self.points) do
             v:draw()
         end
@@ -124,8 +151,8 @@ function PolygonShape:draw()
 end
 
 
-function PolygonShape:addPoint(x, y)
-    table.insert(self.points, PointEntity:new({
+function PolygonShape:addPoint(x, y, i, grabbed)
+    local ent = PointEntity:new({
         x = x,
         y = y,
         radius = 8,
@@ -142,6 +169,27 @@ function PolygonShape:addPoint(x, y)
 
             self.invalid = not love.math.isConvex(unpack(p))
 
+        end,
+        onRemove = function (point)
+
+            local id = 0
+            for i=1, #self.points do
+                if self.points[i] == point then
+                    id = i
+                    break
+                end
+            end
+            if id == 0 then return end
+
+            table.remove(self.points, id)
+
+            if #self.points <= 2 then
+                self:remove()
+            end
+
         end
-    }))
+    })
+    ent.grabbed = grabbed
+    if i then table.insert(self.points, i, ent)
+         else table.insert(self.points, ent) end
 end
