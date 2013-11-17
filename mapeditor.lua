@@ -131,7 +131,7 @@ mapeditor.world.mousex = 0
 mapeditor.world.mousey = 0
 mapeditor.world.gridmousex = 0
 mapeditor.world.gridmousey = 0
-mapeditor.world.mouseonobject = 0
+mapeditor.world.hoverobject = nil
 
 mapeditor.world.mousedown = false
 mapeditor.world.mousepressed = false
@@ -148,7 +148,7 @@ mapeditor.world.zoomtarget = 1
 
 mapeditor.Update = function (self)
 
-    self.world.mouseonobject = false
+    self.world.hoverobject = nil
 
     if self:GetHover() then
         mapeditor.world.mousex = mousex - (love.graphics.getWidth() / 2 - mapeditor.world.camerax)

@@ -2,6 +2,7 @@ EntitySpawner = class("EntitySpawner", PointEntity)
 
 function EntitySpawner:initialize(data, id)
     PointEntity.initialize(self, data)
+    self.name = "EntitySpawner"
 
     data = data or {}
     self.type = data.type or ""

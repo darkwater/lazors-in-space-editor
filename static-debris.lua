@@ -2,6 +2,7 @@ StaticDebris = class("StaticDebris", PolygonShape)
 
 function StaticDebris:initialize(data, id)
     PolygonShape.initialize(self, data)
+    self.name = "StaticDebris"
     self.canconvex = true
 
     self.objectid = id

@@ -2,6 +2,7 @@ PointEntity = class("PointEntity")
 
 function PointEntity:initialize(data)
     if not data then data = {} end
+    self.name = "PointEntity"
 
     if not data.x or not data.y then
         self.x = 0
@@ -23,19 +24,27 @@ end
 
 function PointEntity:update(dt)
     if self.creating then
+
+        mapeditor.world.hoverobject = self
+
         if mapeditor.world.mousepressed then
             self.x = mapeditor.world.gridmousex
             self.y = mapeditor.world.gridmousey
             self.creating = false
         end
     else
-        self.hovering = self.grabbed or mapeditor:GetHover() and not mapeditor.world.mouseonobject and util.distance(mapeditor.world.mousex, mapeditor.world.mousey, self.x, self.y) < self.radius
+
+        self.hovering = self.grabbed or mapeditor:GetHover() and not mapeditor.world.hoverobject and util.distance(mapeditor.world.mousex, mapeditor.world.mousey, self.x, self.y) < self.radius
+
+        if self.hovering then
+            mapeditor.world.hoverobject = self
+        end
 
         if self.grabbed then
             if interface.mousereleased["l"] then
                 self.grabbed = false
             else
-                mapeditor.world.mouseonobject = true
+                mapeditor.world.hoverobject = self
                 if self.x ~= mapeditor.world.gridmousex or self.y ~= mapeditor.world.gridmousey then
                     self.x = mapeditor.world.gridmousex
                     self.y = mapeditor.world.gridmousey
@@ -44,7 +53,7 @@ function PointEntity:update(dt)
                 end
             end
         elseif self.hovering then
-            mapeditor.world.mouseonobject = true
+            mapeditor.world.hoverobject = self
 
             if interface.mousepressed["l"] then
                 self.grabbed = true

@@ -23,6 +23,9 @@ end
 
 function PolygonShape:update(dt)
     if self.creating then
+
+        mapeditor.world.hoverobject = self
+
         if #self.points >= 3 and not self.canconvex then
 
             local p = {}
@@ -71,7 +74,7 @@ function PolygonShape:update(dt)
         end
 
         self.hover = false
-        if mapeditor:GetHover() and not mapeditor.world.mouseonobject then
+        if mapeditor:GetHover() and not mapeditor.world.hoverobject then
 
             for i = 1, #self.points do
                 local j = (i < #self.points) and (i + 1) or 1
@@ -82,8 +85,10 @@ function PolygonShape:update(dt)
                     local x = util.lerp(a.x, b.x, u)
                     local y = util.lerp(a.y, b.y, u)
                     self.hover = {x=x, y=y, i=i}
+                    mapeditor.world.hoverobject = self
                 end
             end
+
         end
 
         if self.hover and interface.mousepressed["l"] then
@@ -99,6 +104,7 @@ function PolygonShape:draw()
     love.graphics.setLineWidth(1.2)
 
     if self.creating then
+
         if #self.points > 0 then
 
             local p = {}

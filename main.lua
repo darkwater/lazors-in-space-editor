@@ -264,6 +264,8 @@ function love.draw()
 
     loveframes.draw()
 
+    love.graphics.print(mapeditor.world.hoverobject and mapeditor.world.hoverobject.name or "", 10, love.graphics.getHeight() - 20)
+
 end
 
 function love.keypressed(key, isrepeat)
