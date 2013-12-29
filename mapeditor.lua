@@ -162,6 +162,7 @@ mapeditor.Update = function (self)
                 mapeditor.world.cameragrabx = mousex
                 mapeditor.world.cameragraby = mousey
                 love.mouse.setVisible(false)
+                interface.mousepressed["l"] = false
             else
                 mapeditor.world.mousedown = true
                 mapeditor.world.mousepressed = true

@@ -79,15 +79,24 @@ function love.load()
             interface.mapselect.list = loveframes.Create("columnlist", interface.mapselect.panel)
             interface.mapselect.list:SetPos(5, 5)
             interface.mapselect.list:SetSize(400, 390)
-            interface.mapselect.list:AddColumn("Filename")
             interface.mapselect.list:AddColumn("Map name")
+            interface.mapselect.list:AddColumn("Title")
             interface.mapselect.list:AddColumn("Author")
+            interface.mapselect.list:AddColumn("Has logic")
             interface.mapselect.list.Refresh = function (self)
                 self:Clear()
                 for k, v in ipairs(love.filesystem.getDirectoryItems("maps")) do
-                    local str = love.filesystem.read("maps/" .. v)
-                    local obj = json.decode(str)
-                    self:AddRow(v, obj.name, obj.author)
+                    if v:sub(-4, -1) == ".map" then
+
+                        local name = v:sub(1, -5)
+
+                        local str = love.filesystem.read("maps/" .. name .. ".map")
+                        local obj = json.decode(str)
+                        local logic = love.filesystem.exists("maps/" ..name  .. ".lua")
+
+                        self:AddRow(name, obj.name, obj.author, logic and "Yes" or "")    
+
+                    end
                 end
             end
             interface.mapselect.list:Refresh()
@@ -111,12 +120,12 @@ function love.load()
                 prompt:MakeTop()
 
                 local label = loveframes.Create("text", prompt)
-                label:SetText("Enter a filename")
+                label:SetText("Enter a name")
                 label:CenterX()
                 label:SetY(40)
 
                 local input = loveframes.Create("textinput", prompt)
-                input:SetPlaceholder("Filename")
+                input:SetPlaceholder("Map name")
                 input:SetUnusable({"/", "\0"})
                 input:SetWidth(180)
                 input:CenterX()
@@ -129,7 +138,7 @@ function love.load()
                         author  = "No-one",
                         mapdata = {}
                     }
-                    love.filesystem.write("maps/" .. name, json.encode(data) .. "\n")
+                    love.filesystem.write("maps/" .. name .. ".map", json.encode(data) .. "\n")
                     prompt:Remove()
                     interface.mapselect.list:Refresh()
                 end
@@ -218,7 +227,7 @@ function love.load()
             interface.mapselect.edit.OnClick = function (self)
                 if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
 
-                local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
+                local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1] .. ".map"
 
                 loveframes.SetState("mapeditor")
                 mapeditor:LoadMap(mapname)
