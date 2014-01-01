@@ -15,10 +15,6 @@ end
 
 function EntitySpawner:update(dt)
     PointEntity.update(self, dt)
-
-    if self.hovering and interface.mousepressed["r"] then
-        self:ContextMenu()
-    end
 end
 
 
@@ -43,7 +39,7 @@ function EntitySpawner:GetDataTable()
 end
 
 
-function EntitySpawner:ContextMenu()
+function EntitySpawner:onContextMenu()
     local menu = PropertiesMenu:new(mousex, mousey, 125, 150)
 
     local typeinput = loveframes.Create("textinput", menu.panel)

@@ -95,7 +95,15 @@ function PolygonShape:update(dt)
             self:addPoint(self.hover.x, self.hover.y, self.hover.i + 1, true)
         end
 
+        if self.hover and interface.mousepressed["r"] then
+            self:ContextMenu()
+        end
+
     end
+end
+
+
+function PolygonShape:ContextMenu()
 end
 
 
@@ -192,6 +200,11 @@ function PolygonShape:addPoint(x, y, i, grabbed)
             if #self.points <= 2 then
                 self:remove()
             end
+
+        end,
+        onContextMenu = function ()
+        
+            self:ContextMenu()
 
         end
     })

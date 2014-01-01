@@ -18,6 +18,7 @@ function PointEntity:initialize(data)
     self.hovering = false
 
     self.onMove = data.onMove or nil
+    self.onContextMenu = data.onContextMenu or nil
     self.onRemove = data.onRemove or nil
 end
 
@@ -63,6 +64,10 @@ function PointEntity:update(dt)
 
     if interface.mousepressed["m"] and self.hovering and self.onRemove then
         self:onRemove()
+    end
+
+    if interface.mousepressed["r"] and self.hovering and self.onContextMenu then
+        self:onContextMenu()
     end
 end
 
