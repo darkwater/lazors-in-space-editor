@@ -11,6 +11,9 @@ function love.load()
     require("properties-menu")
 
 
+    time = 0
+
+
     interface = {}
     
     require("mapeditor")
@@ -19,20 +22,37 @@ function love.load()
     interface.mousereleased = {}
 
     --== Background stars ==--
+
         interface.background = {}
-        interface.background.stars = {}
-        for i = 1, 600 do
-            table.insert(interface.background.stars, {
-                x = love.math.random(0, love.graphics.getWidth()) -.5,
-                y = love.math.random(0, love.graphics.getHeight()) -.5,
-                color = {
-                    love.math.random(200, 255),
-                    love.math.random(200, 255),
-                    love.math.random(200, 255),
-                    love.math.random(1, 255)
-                }
+
+        for i = 1, 2000 do
+
+            table.insert(interface.background,
+            {
+                x = math.random(0, 1000) / 1000,
+                y = math.random(0, 1000) / 1000,
+                r = math.random(220, 255),
+                g = math.random(220, 255),
+                b = math.random(220, 255),
+                a = math.random(50, 100)
             })
+
         end
+
+        for i = 1, 50 do
+
+            table.insert(interface.background,
+            {
+                x = math.random(0, 1000) / 1000,
+                y = math.random(0, 1000) / 1000,
+                r = math.random(230, 255),
+                g = math.random(230, 255),
+                b = math.random(230, 255),
+                a = math.random(150, 200)
+            })
+
+        end
+
     --------------------------
 
 
@@ -67,6 +87,7 @@ function love.load()
 
 
     --== Map selection ==--
+
         interface.mapselect = {}
 
         interface.mapselect.panel = loveframes.Create("panel")
@@ -76,6 +97,7 @@ function love.load()
         interface.mapselect.panel:SetState("mapselect")
 
         --== Maplist ==--
+
             interface.mapselect.list = loveframes.Create("columnlist", interface.mapselect.panel)
             interface.mapselect.list:SetPos(5, 5)
             interface.mapselect.list:SetSize(400, 390)
@@ -100,15 +122,18 @@ function love.load()
                 end
             end
             interface.mapselect.list:Refresh()
+
         -----------------
 
 
         --== Create map ==--
+
             interface.mapselect.create = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.create:SetPos(410, 5)
             interface.mapselect.create:SetWidth(185)
             interface.mapselect.create:SetText("Create map")
             interface.mapselect.create.OnClick = function (self)
+
                 local prompt = loveframes.Create("frame")
                 prompt:SetState("mapselect")
                 prompt:SetName("Create map")
@@ -125,12 +150,13 @@ function love.load()
                 label:SetY(40)
 
                 local input = loveframes.Create("textinput", prompt)
-                input:SetPlaceholder("Map name")
+                input:SetPlaceholderText("Map name")
                 input:SetUnusable({"/", "\0"})
                 input:SetWidth(180)
                 input:CenterX()
                 input:SetY(70)
                 input.OnEnter = function ()
+
                     local name = input:GetText()
 
                     local data = {
@@ -141,6 +167,7 @@ function love.load()
                     love.filesystem.write("maps/" .. name .. ".map", json.encode(data) .. "\n")
                     prompt:Remove()
                     interface.mapselect.list:Refresh()
+
                 end
 
                 local create = loveframes.Create("button", prompt)
@@ -156,28 +183,38 @@ function love.load()
                 cancel:SetX(105)
                 cancel:SetY(100)
                 cancel.OnClick = function ()
+
                     prompt:Remove()
+
                 end
+
             end
+
         --------------------
 
 
         --== Refresh maplist ==--
+
             interface.mapselect.refresh = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.refresh:SetPos(410, 270)
             interface.mapselect.refresh:SetWidth(185)
             interface.mapselect.refresh:SetText("Refresh list")
             interface.mapselect.refresh.OnClick = function (self)
+
                 interface.mapselect.list:Refresh()
+
             end
+
         --------------------
 
         --== Remove map ==--
+
             interface.mapselect.remove = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.remove:SetPos(410, 300)
             interface.mapselect.remove:SetWidth(185)
             interface.mapselect.remove:SetText("Remove")
             interface.mapselect.remove.OnClick = function (self)
+
                 if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
 
                 local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
@@ -216,10 +253,13 @@ function love.load()
                 cancel.OnClick = function ()
                     prompt:Remove()
                 end
+
             end
+
         --------------------
 
         --== Edit map ==--
+
             interface.mapselect.edit = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.edit:SetPos(410, 330)
             interface.mapselect.edit:SetWidth(185)
@@ -232,23 +272,37 @@ function love.load()
                 loveframes.SetState("mapeditor")
                 mapeditor:LoadMap(mapname)
             end
+
         ------------------
 
 
         --== Back ==--
+
             interface.mapselect.back = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.back:SetPos(410, 370)
             interface.mapselect.back:SetWidth(185)
             interface.mapselect.back:SetText("Back")
             interface.mapselect.back.OnClick = function (self)
+
                 loveframes.SetState("mainmenu")
+
             end
+
         ------------------
+
     -------------------
 
 end
 
 function love.update(dt)
+
+    time = time + dt
+
+    for k,v in pairs(interface.background) do
+
+        v.x = (v.x - dt / 500) % 1
+
+    end
 
     mousex, mousey = love.mouse.getPosition()
     loveframes.update(dt)
@@ -260,11 +314,13 @@ function love.draw()
     -- Stars
     local width = love.graphics.getWidth()
     local height = love.graphics.getHeight()
-    love.graphics.setPointSize(1)
 
-    for k,v in pairs(interface.background.stars) do
-        love.graphics.setColor(unpack(v.color))
-        love.graphics.point(v.x, v.y)
+    love.graphics.setPointSize(1)
+    for k,v in pairs(interface.background) do
+
+        love.graphics.setColor(v.r, v.g, v.b, v.a + math.sin(v.r + time * 4) * 30)
+        love.graphics.point(math.floor(v.x * width), math.floor(v.y * height))
+
     end
 
 
