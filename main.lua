@@ -2,7 +2,7 @@ math.tau = math.pi * 2 -- harr harr
 
 function love.load()
 
-    if not love.filesystem.isDirectory("maps") then love.filesystem.createDirectory("maps") end
+    if not love.filesystem.isDirectory("content") then love.filesystem.createDirectory("content") end
 
     class = require("middleclass")
     require("loveframes")
@@ -15,7 +15,7 @@ function love.load()
 
 
     interface = {}
-    
+
     require("mapeditor")
 
     interface.mousepressed = {}
@@ -69,30 +69,30 @@ function love.load()
         interface.mainmenu.panel:Center()
         interface.mainmenu.panel:SetState("mainmenu")
 
-        --== Maplist ==--
+        --== List ==--
 
             interface.mainmenu.packs = loveframes.Create("columnlist", interface.mainmenu.panel)
             interface.mainmenu.packs:SetPos(5, 5)
             interface.mainmenu.packs:SetSize(400, 390)
-            interface.mainmenu.packs:AddColumn("Name")
+            interface.mainmenu.packs:AddColumn("Identifier")
             interface.mainmenu.packs:AddColumn("Title")
             interface.mainmenu.packs:AddColumn("Author")
-            interface.mainmenu.packs:AddColumn("Has logic")
             interface.mainmenu.packs.Refresh = function (self)
+
                 self:Clear()
-                for k, v in ipairs(love.filesystem.getDirectoryItems("maps")) do
-                    if v:sub(-4, -1) == ".map" then
+                for i,id in ipairs(love.filesystem.getDirectoryItems("content")) do
 
-                        local name = v:sub(1, -5)
+                    if love.filesystem.isDirectory("content/" .. id) then
 
-                        local str = love.filesystem.read("maps/" .. name .. ".map")
+                        local str = love.filesystem.read("content/" .. id .. "/info.json")
                         local obj = json.decode(str)
-                        local logic = love.filesystem.exists("maps/" ..name  .. ".lua")
 
-                        self:AddRow(name, obj.name, obj.author, logic and "Yes" or "")    
+                        self:AddRow(id, obj.name, obj.author)
 
                     end
+
                 end
+
             end
             interface.mainmenu.packs:Refresh()
 
@@ -104,7 +104,7 @@ function love.load()
             interface.mainmenu.create = loveframes.Create("button", interface.mainmenu.panel)
             interface.mainmenu.create:SetPos(410, 5)
             interface.mainmenu.create:SetWidth(185)
-            interface.mainmenu.create:SetText("Create map")
+            interface.mainmenu.create:SetText("Create new pack")
             interface.mainmenu.create.OnClick = function (self)
 
                 local prompt = loveframes.Create("frame")
@@ -190,7 +190,7 @@ function love.load()
 
                 if #interface.mainmenu.packs:GetSelectedRows() <= 0 then return end
 
-                local mapname = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[1]
+                local packname = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[1]
 
                 local prompt = loveframes.Create("frame")
                 prompt:SetState("mainmenu")
@@ -202,7 +202,7 @@ function love.load()
                 prompt:MakeTop()
 
                 local label = loveframes.Create("text", prompt)
-                label:SetText("Are you sure you want to delete " .. mapname .. "?")
+                label:SetText("Are you sure you want to delete " .. packname .. "?")
                 label:SetWidth(160)
                 label:CenterX()
                 label:SetY(35)
@@ -213,7 +213,7 @@ function love.load()
                 remove:SetX(10)
                 remove:SetY(75)
                 remove.OnClick = function ()
-                    love.filesystem.remove("maps/" .. mapname)
+                    love.filesystem.remove("maps/" .. packname)
                     prompt:Remove()
                     interface.mainmenu.packs:Refresh()
                 end
@@ -296,7 +296,7 @@ function love.load()
                         local obj = json.decode(str)
                         local logic = love.filesystem.exists("maps/" ..name  .. ".lua")
 
-                        self:AddRow(name, obj.name, obj.author, logic and "Yes" or "")    
+                        self:AddRow(name, obj.name, obj.author, logic and "Yes" or "")
 
                     end
                 end
