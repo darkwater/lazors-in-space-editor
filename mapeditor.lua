@@ -237,13 +237,13 @@ mapeditor.Draw = function (self)
 end
 
 
-mapeditor.LoadMap = function (self, name)
+mapeditor.LoadMap = function (self, packname, mapname)
 
-    self.mapname = name
+    self.mapname = mapname
 
     self.world.objects = {}
 
-    local str = love.filesystem.read("maps/" .. name)
+    local str = love.filesystem.read("content/" .. packname .. "/maps/" .. mapname .. ".map")
     self.mapdata = json.decode(str)
 
     for k,v in pairs(self.mapdata.mapdata) do
@@ -257,7 +257,7 @@ mapeditor.LoadMap = function (self, name)
 end
 
 
-mapeditor.SaveTo = function (self, name)
+mapeditor.SaveTo = function (self, packname, mapname)
 
     local obj = self.mapdata
 
@@ -268,7 +268,7 @@ mapeditor.SaveTo = function (self, name)
         end
     end
 
-    love.filesystem.write("maps/" .. name, json.encode(obj) .. "\n")
+    love.filesystem.write("content/" .. packname .. "/maps/" .. mapname, json.encode(obj) .. "\n")
 
 end
 
@@ -291,7 +291,7 @@ mapeditor.SaveAs = function (self)
     label:SetY(40)
 
     local input = loveframes.Create("textinput", prompt)
-    input:SetPlaceholder("Filename")
+    input:SetPlaceholderText("Filename")
     input:SetUnusable({"/", "\0"})
     input:SetWidth(180)
     input:CenterX()

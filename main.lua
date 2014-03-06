@@ -99,7 +99,7 @@ function love.load()
         -----------------
 
 
-        --== Create map ==--
+        --== Create pack ==--
 
             interface.mainmenu.create = loveframes.Create("button", interface.mainmenu.panel)
             interface.mainmenu.create:SetPos(410, 5)
@@ -118,12 +118,12 @@ function love.load()
                 prompt:MakeTop()
 
                 local label = loveframes.Create("text", prompt)
-                label:SetText("Enter a name")
+                label:SetText("Enter an identifier")
                 label:CenterX()
                 label:SetY(40)
 
                 local input = loveframes.Create("textinput", prompt)
-                input:SetPlaceholderText("Map name")
+                input:SetPlaceholderText("Identifier")
                 input:SetUnusable({"/", "\0"})
                 input:SetWidth(180)
                 input:CenterX()
@@ -135,9 +135,9 @@ function love.load()
                     local data = {
                         name    = "Unnamed",
                         author  = "No-one",
-                        mapdata = {}
+                        sectors = {}
                     }
-                    love.filesystem.write("maps/" .. name .. ".map", json.encode(data) .. "\n")
+                    love.filesystem.write("content/" .. name .. "/info.json", json.encode(data) .. "\n")
                     prompt:Remove()
                     interface.mainmenu.packs:Refresh()
 
@@ -166,10 +166,29 @@ function love.load()
         --------------------
 
 
-        --== Refresh maplist ==--
+        --== Map editor ==--
+
+            interface.mainmenu.mapeditor = loveframes.Create("button", interface.mainmenu.panel)
+            interface.mainmenu.mapeditor:SetPos(410, 45)
+            interface.mainmenu.mapeditor:SetWidth(185)
+            interface.mainmenu.mapeditor:SetText("Map editor")
+            interface.mainmenu.mapeditor.OnClick = function (self)
+
+                if #interface.mainmenu.packs:GetSelectedRows() <= 0 then return end
+
+                selectedpack = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[1]
+                loveframes.SetState("mapselect")
+                interface.mapselect.list:Refresh()
+
+            end
+
+        --------------------
+
+
+        --== Refresh list ==--
 
             interface.mainmenu.refresh = loveframes.Create("button", interface.mainmenu.panel)
-            interface.mainmenu.refresh:SetPos(410, 270)
+            interface.mainmenu.refresh:SetPos(410, 300)
             interface.mainmenu.refresh:SetWidth(185)
             interface.mainmenu.refresh:SetText("Refresh list")
             interface.mainmenu.refresh.OnClick = function (self)
@@ -180,70 +199,69 @@ function love.load()
 
         --------------------
 
-        --== Remove map ==--
+        --== Remove pack ==--
 
-            interface.mainmenu.remove = loveframes.Create("button", interface.mainmenu.panel)
-            interface.mainmenu.remove:SetPos(410, 300)
-            interface.mainmenu.remove:SetWidth(185)
-            interface.mainmenu.remove:SetText("Remove")
-            interface.mainmenu.remove.OnClick = function (self)
+            -- interface.mainmenu.remove = loveframes.Create("button", interface.mainmenu.panel)
+            -- interface.mainmenu.remove:SetPos(410, 300)
+            -- interface.mainmenu.remove:SetWidth(185)
+            -- interface.mainmenu.remove:SetText("Remove")
+            -- interface.mainmenu.remove.OnClick = function (self)
 
-                if #interface.mainmenu.packs:GetSelectedRows() <= 0 then return end
+            --     if #interface.mainmenu.packs:GetSelectedRows() <= 0 then return end
 
-                local packname = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[1]
+            --     local packname = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[2]
 
-                local prompt = loveframes.Create("frame")
-                prompt:SetState("mainmenu")
-                prompt:SetName("Delete map")
-                prompt:SetWidth(200)
-                prompt:SetHeight(110)
-                prompt:Center()
-                prompt:SetModal(true)
-                prompt:MakeTop()
+            --     local prompt = loveframes.Create("frame")
+            --     prompt:SetState("mainmenu")
+            --     prompt:SetName("Remove pack")
+            --     prompt:SetWidth(200)
+            --     prompt:SetHeight(110)
+            --     prompt:Center()
+            --     prompt:SetModal(true)
+            --     prompt:MakeTop()
 
-                local label = loveframes.Create("text", prompt)
-                label:SetText("Are you sure you want to delete " .. packname .. "?")
-                label:SetWidth(160)
-                label:CenterX()
-                label:SetY(35)
+            --     local label = loveframes.Create("text", prompt)
+            --     label:SetText("Are you sure you want to delete " .. packname .. "?")
+            --     label:SetWidth(160)
+            --     label:CenterX()
+            --     label:SetY(35)
 
-                local remove = loveframes.Create("button", prompt)
-                remove:SetText("Remove")
-                remove:SetWidth(85)
-                remove:SetX(10)
-                remove:SetY(75)
-                remove.OnClick = function ()
-                    love.filesystem.remove("maps/" .. packname)
-                    prompt:Remove()
-                    interface.mainmenu.packs:Refresh()
-                end
+            --     local remove = loveframes.Create("button", prompt)
+            --     remove:SetText("Remove")
+            --     remove:SetWidth(85)
+            --     remove:SetX(10)
+            --     remove:SetY(75)
+            --     remove.OnClick = function ()
+            --         love.filesystem.remove("maps/" .. packname)
+            --         prompt:Remove()
+            --         interface.mainmenu.packs:Refresh()
+            --     end
 
-                local cancel = loveframes.Create("button", prompt)
-                cancel:SetText("Cancel")
-                cancel:SetWidth(85)
-                cancel:SetX(105)
-                cancel:SetY(75)
-                cancel.OnClick = function ()
-                    prompt:Remove()
-                end
+            --     local cancel = loveframes.Create("button", prompt)
+            --     cancel:SetText("Cancel")
+            --     cancel:SetWidth(85)
+            --     cancel:SetX(105)
+            --     cancel:SetY(75)
+            --     cancel.OnClick = function ()
+            --         prompt:Remove()
+            --     end
 
-            end
+            -- end
 
         --------------------
 
-        --== Edit map ==--
+        --== Properties ==--
 
             interface.mainmenu.edit = loveframes.Create("button", interface.mainmenu.panel)
             interface.mainmenu.edit:SetPos(410, 330)
             interface.mainmenu.edit:SetWidth(185)
-            interface.mainmenu.edit:SetText("Edit")
+            interface.mainmenu.edit:SetText("Properties")
             interface.mainmenu.edit.OnClick = function (self)
+
                 if #interface.mainmenu.packs:GetSelectedRows() <= 0 then return end
 
-                local mapname = interface.mainmenu.packs:GetSelectedRows()[1]:GetColumnData()[1] .. ".map"
 
-                loveframes.SetState("mapeditor")
-                mapeditor:LoadMap(mapname)
+
             end
 
         ------------------
@@ -284,24 +302,26 @@ function love.load()
             interface.mapselect.list:AddColumn("Map name")
             interface.mapselect.list:AddColumn("Title")
             interface.mapselect.list:AddColumn("Author")
-            interface.mapselect.list:AddColumn("Has logic")
             interface.mapselect.list.Refresh = function (self)
+
                 self:Clear()
-                for k, v in ipairs(love.filesystem.getDirectoryItems("maps")) do
+
+                for k, v in ipairs(love.filesystem.getDirectoryItems("content/" .. selectedpack .. "/maps")) do
+
                     if v:sub(-4, -1) == ".map" then
 
                         local name = v:sub(1, -5)
 
-                        local str = love.filesystem.read("maps/" .. name .. ".map")
+                        local str = love.filesystem.read("content/" .. selectedpack .. "/maps/" .. name .. ".map")
                         local obj = json.decode(str)
-                        local logic = love.filesystem.exists("maps/" ..name  .. ".lua")
 
-                        self:AddRow(name, obj.name, obj.author, logic and "Yes" or "")
+                        self:AddRow(name, obj.name, obj.author)
 
                     end
+
                 end
+
             end
-            interface.mapselect.list:Refresh()
 
         -----------------
 
@@ -373,6 +393,25 @@ function love.load()
         --------------------
 
 
+        --== Edit ==--
+
+            interface.mapselect.edit = loveframes.Create("button", interface.mapselect.panel)
+            interface.mapselect.edit:SetPos(410, 45)
+            interface.mapselect.edit:SetWidth(185)
+            interface.mapselect.edit:SetText("Edit")
+            interface.mapselect.edit.OnClick = function (self)
+            
+                if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
+
+                local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1]
+
+                loveframes.SetState("mapeditor")
+                mapeditor:LoadMap(selectedpack, mapname)
+
+            end
+
+        ------------------
+
         --== Refresh maplist ==--
 
             interface.mapselect.refresh = loveframes.Create("button", interface.mapselect.panel)
@@ -420,7 +459,7 @@ function love.load()
                 remove:SetX(10)
                 remove:SetY(75)
                 remove.OnClick = function ()
-                    love.filesystem.remove("maps/" .. mapname)
+                    love.filesystem.remove("content/" .. selectedpack .. "/maps/" .. mapname)
                     prompt:Remove()
                     interface.mapselect.list:Refresh()
                 end
@@ -438,19 +477,19 @@ function love.load()
 
         --------------------
 
-        --== Edit map ==--
+        --== Properties ==--
 
             interface.mapselect.edit = loveframes.Create("button", interface.mapselect.panel)
             interface.mapselect.edit:SetPos(410, 330)
             interface.mapselect.edit:SetWidth(185)
-            interface.mapselect.edit:SetText("Edit")
+            interface.mapselect.edit:SetText("Properties")
             interface.mapselect.edit.OnClick = function (self)
                 if #interface.mapselect.list:GetSelectedRows() <= 0 then return end
 
                 local mapname = interface.mapselect.list:GetSelectedRows()[1]:GetColumnData()[1] .. ".map"
 
                 loveframes.SetState("mapeditor")
-                mapeditor:LoadMap(mapname)
+                mapeditor:LoadMap(selectedpack, mapname)
             end
 
         ------------------
